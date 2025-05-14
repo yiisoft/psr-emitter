@@ -14,11 +14,15 @@
          displayDetailsOnPhpunitDeprecations="true"
 >
     <php>
-        <ini name="error_reporting" value="-1"/>
+        <ini name="error_reporting" value="-1" />
     </php>
 
+    <extensions>
+        <bootstrap class="Yiisoft\PsrEmitter\Tests\Support\InternalMocker\MockerExtension" />
+    </extensions>
+
     <testsuites>
-        <testsuite name="Yii _____ tests">
+        <testsuite name="Yii PSR Emitter tests">
             <directory>./tests</directory>
         </testsuite>
     </testsuites>

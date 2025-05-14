@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Yiisoft\PsrEmitter\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\PsrEmitter\FakeEmitter;
