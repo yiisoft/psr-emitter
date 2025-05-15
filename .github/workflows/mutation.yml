@@ -24,9 +24,10 @@ jobs:
   mutation:
     uses: yiisoft/actions/.github/workflows/roave-infection.yml@master
     with:
+      ini-values: disable_functions="headers_sent,header,header_remove,flush"
       os: >-
         ['ubuntu-latest']
       php: >-
-        ['8.2']
+        ['8.3']
     secrets:
       STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
