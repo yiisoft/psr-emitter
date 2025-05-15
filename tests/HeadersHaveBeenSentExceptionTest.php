@@ -14,18 +14,15 @@ final class HeadersHaveBeenSentExceptionTest extends TestCase
 {
     protected function setUp(): void
     {
-        HeadersSentMock::$result = true;
-        HeadersSentMock::$file = 'test.php';
-        HeadersSentMock::$line = 123;
-    }
-
-    protected function tearDown(): void
-    {
         HeadersSentMock::reset();
     }
 
     public function testBase(): void
     {
+        HeadersSentMock::$result = true;
+        HeadersSentMock::$file = 'test.php';
+        HeadersSentMock::$line = 123;
+
         $exception = new HeadersHaveBeenSentException();
 
         assertSame('HTTP headers have been sent.', $exception->getName());

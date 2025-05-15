@@ -90,6 +90,9 @@ final class SapiEmitter implements EmitterInterface
     {
         $level = ob_get_level();
         $body = $response->getBody();
+        if (!$body->isReadable()) {
+            return;
+        }
 
         if ($body->isSeekable()) {
             $body->rewind();

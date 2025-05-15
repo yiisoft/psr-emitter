@@ -64,7 +64,7 @@
         }
     },
     "scripts": {
-        "test": "php -ddisable_functions=headers_sent ./vendor/bin/phpunit --testdox",
+        "test": "php -ddisable_functions=headers_sent,header,header_remove,flush ./vendor/bin/phpunit --testdox",
         "test-watch": "phpunit-watcher watch"
     }
 }

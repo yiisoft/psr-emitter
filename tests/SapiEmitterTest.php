@@ -1,0 +1,171 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Yiisoft\PsrEmitter\Tests;
+
+use HttpSoft\Message\Response;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\TestWith;
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamInterface;
+use Yiisoft\PsrEmitter\HeadersHaveBeenSentException;
+use Yiisoft\PsrEmitter\SapiEmitter;
+use Yiisoft\PsrEmitter\Tests\Support\ClosureResponse;
+use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\FlushMock;
+use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeaderMock;
+use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeaderRemoveMock;
+use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeadersSentMock;
+use Yiisoft\PsrEmitter\Tests\Support\StreamStub;
+
+use function PHPUnit\Framework\assertSame;
+
+final class SapiEmitterTest extends TestCase
+{
+    protected function setUp(): void
+    {
+        HeaderMock::reset();
+        HeadersSentMock::reset();
+        HeaderRemoveMock::reset();
+        FlushMock::reset();
+    }
+
+    #[TestWith([null])]
+    #[TestWith([1])]
+    #[TestWith([100])]
+    #[TestWith([1000])]
+    public function testBase(?int $bufferSize): void
+    {
+        $content = 'Example body';
+        $response = new Response(
+            headers: ['X-Test' => 1],
+            body: new StreamStub($content),
+        );
+        $emitter = new SapiEmitter($bufferSize);
+
+        $emitter->emit($response);
+
+        assertSame('HTTP/1.1 200 OK', HeaderMock::$status);
+        assertSame(['X-Test' => ['1']], HeaderMock::$headers);
+        assertSame(1, HeaderRemoveMock::$countWithoutName);
+        assertSame(0, HeaderRemoveMock::$countWithName);
+        assertSame(2, FlushMock::$count);
+        $this->expectOutputString($content);
+    }
+
+    public function testFlushWithoutBody(): void
+    {
+        $response = new Response(body: new StreamStub());
+        $emitter = new SapiEmitter();
+
+        $emitter->emit($response);
+
+        assertSame(1, FlushMock::$count);
+    }
+
+    public function testNotReadableStream(): void
+    {
+        $response = new Response(
+            headers: ['X-Test' => 42],
+            body: new StreamStub('hello', readable: false),
+        );
+        $emitter = new SapiEmitter();
+
+        $emitter->emit($response);
+
+        assertSame('HTTP/1.1 200 OK', HeaderMock::$status);
+        assertSame(['X-Test' => ['42']], HeaderMock::$headers);
+        $this->expectOutputString('');
+    }
+
+    public function testNotWriteableStream(): void
+    {
+        $content = 'Test';
+        $response = new Response(
+            headers: ['X-Test' => 42],
+            body: new StreamStub($content, writable: false),
+        );
+        $emitter = new SapiEmitter();
+
+        $emitter->emit($response);
+
+        assertSame('HTTP/1.1 200 OK', HeaderMock::$status);
+        assertSame(['X-Test' => ['42']], HeaderMock::$headers);
+        $this->expectOutputString($content);
+    }
+
+    #[TestWith([0])]
+    #[TestWith([-1])]
+    public function testBufferSizeLessThanOne(int $value): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Buffer size must be greater than zero.');
+        new SapiEmitter($value);
+    }
+
+    public function testHeadersHaveBeenSent(): void
+    {
+        $response = new Response();
+        $emitter = new SapiEmitter();
+        HeadersSentMock::$result = true;
+
+        $this->expectException(HeadersHaveBeenSentException::class);
+        $emitter->emit($response);
+    }
+
+    public function testObLevel(): void
+    {
+        $expectedLevel = ob_get_level();
+        $response = new Response();
+        $emitter = new SapiEmitter();
+
+        $emitter->emit($response);
+
+        $actualLevel = ob_get_level();
+        assertSame($expectedLevel, $actualLevel);
+    }
+
+    #[TestWith(['', 1])]
+    #[TestWith(['Example body', 2])]
+    public function testExtraObLevel(string $content, int $expectedFlushes): void
+    {
+        $expectedLevel = ob_get_level();
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->method('read')->willReturnCallback(static function () use ($content) {
+            ob_start();
+            ob_start();
+            ob_start();
+            return $content;
+        });
+        $stream->method('isReadable')->willReturn(true);
+        $stream->method('eof')->willReturnOnConsecutiveCalls(false, true);
+        $response = new Response(body: $stream);
+        $emitter = new SapiEmitter();
+
+        $emitter->emit($response);
+
+        $actualLevel = ob_get_level();
+        assertSame($expectedLevel, $actualLevel);
+        assertSame($expectedFlushes, FlushMock::$count);
+        $this->expectOutputString($content);
+    }
+
+    public function testNotClosedBuffer(): void
+    {
+        $response1 = new ClosureResponse(static fn() => '1');
+        $response2 = new ClosureResponse(
+            static function () {
+                ob_start();
+                return '2';
+            }
+        );
+        $response3 = new ClosureResponse(static fn() => '3');
+        $emitter = new SapiEmitter();
+
+        $emitter->emit($response1);
+        $emitter->emit($response2);
+        $emitter->emit($response3);
+
+        $this->assertSame('123', $this->getActualOutputForAssertion());
+    }
+}
