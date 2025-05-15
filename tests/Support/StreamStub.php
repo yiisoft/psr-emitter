@@ -23,6 +23,7 @@ final class StreamStub implements StreamInterface, Stringable
     public function __toString(): string
     {
         throw new LogicException('Not implemented.');
+        return '';
     }
 
     public function close(): void
