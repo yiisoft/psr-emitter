@@ -33,6 +33,7 @@
         "yiisoft/friendly-exception": "^1.1"
     },
     "require-dev": {
+        "httpsoft/http-message": "^1.1",
         "maglnet/composer-require-checker": "^4.7.1",
         "phpunit/phpunit": "^10.5.46",
         "psr/http-server-middleware": "^1.0",

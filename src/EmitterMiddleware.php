@@ -12,7 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class EmitterMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private EmitterInterface $emitter = new SapiEmitter(),
+        private readonly EmitterInterface $emitter = new SapiEmitter(),
     ) {
     }
 
