@@ -52,7 +52,7 @@ final class SapiEmitter implements EmitterInterface
     }
 
     /**
-     * @throws HeadersHaveBeenSentException
+     * @throws HeadersHaveBeenSentException If headers have already been sent.
      */
     private function emitHeaders(ResponseInterface $response): void
     {

@@ -16,7 +16,7 @@ interface EmitterInterface
      *
      * @param ResponseInterface $response Response object to send.
      *
-     * @throws HeadersHaveBeenSentException
+     * @throws HeadersHaveBeenSentException If headers have already been sent.
      */
     public function emit(ResponseInterface $response): void;
 }
