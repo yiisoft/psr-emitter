@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\PsrEmitter\Tests;
 
 use HttpSoft\Message\Response;
+use HttpSoft\Message\StreamFactory;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
@@ -30,16 +31,15 @@ final class SapiEmitterTest extends TestCase
         FlushMock::reset();
     }
 
-    #[TestWith([null])]
-    #[TestWith([1])]
-    #[TestWith([100])]
-    #[TestWith([1000])]
-    public function testBase(?int $bufferSize): void
+    #[TestWith([2, null])]
+    #[TestWith([13, 1])]
+    #[TestWith([2, 100])]
+    public function testBase(int $expectedFlushCalls, ?int $bufferSize): void
     {
         $content = 'Example body';
         $response = new Response(
             headers: ['X-Test' => 1],
-            body: new StreamStub($content),
+            body: (new StreamFactory())->createStream($content),
         );
         $emitter = new SapiEmitter($bufferSize);
 
@@ -49,7 +49,7 @@ final class SapiEmitterTest extends TestCase
         assertSame(['X-Test' => ['1']], HeaderMock::$headers);
         assertSame(1, HeaderRemoveMock::$countWithoutName);
         assertSame(0, HeaderRemoveMock::$countWithName);
-        assertSame(2, FlushMock::$count);
+        assertSame($expectedFlushCalls, FlushMock::$count);
         $this->expectOutputString($content);
     }
 
