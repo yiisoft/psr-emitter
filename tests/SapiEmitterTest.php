@@ -117,6 +117,19 @@ final class SapiEmitterTest extends TestCase
         $this->expectOutputString($content);
     }
 
+    public function testSeekableStream(): void
+    {
+        $content = 'Test';
+        $body = new StreamStub($content);
+        $body->read(100);
+        $response = new Response(body: $body);
+        $emitter = new SapiEmitter();
+
+        $emitter->emit($response);
+
+        $this->expectOutputString($content);
+    }
+
     #[TestWith([0])]
     #[TestWith([-1])]
     public function testBufferSizeLessThanOne(int $value): void
