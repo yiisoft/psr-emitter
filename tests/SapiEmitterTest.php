@@ -17,7 +17,7 @@ use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\FlushMock;
 use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeaderMock;
 use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeaderRemoveMock;
 use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeadersSentMock;
-use Yiisoft\PsrEmitter\Tests\Support\StreamStub;
+use Yiisoft\PsrEmitter\Tests\Support\StreamMock;
 
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
@@ -67,7 +67,7 @@ final class SapiEmitterTest extends TestCase
     public function testFullContentEmission(): void
     {
         $content = 'Example body';
-        $stream = new StreamStub($content);
+        $stream = new StreamMock($content);
         $emitter = new SapiEmitter(12);
 
         $emitter->emit(
@@ -81,7 +81,7 @@ final class SapiEmitterTest extends TestCase
 
     public function testFlushWithoutBody(): void
     {
-        $response = new Response(body: new StreamStub());
+        $response = new Response(body: new StreamMock());
         $emitter = new SapiEmitter();
 
         $emitter->emit($response);
@@ -93,7 +93,7 @@ final class SapiEmitterTest extends TestCase
     {
         $response = new Response(
             headers: ['X-Test' => 42],
-            body: new StreamStub('hello', readable: false),
+            body: new StreamMock('hello', readable: false),
         );
         $emitter = new SapiEmitter();
 
@@ -109,7 +109,7 @@ final class SapiEmitterTest extends TestCase
         $content = 'Test';
         $response = new Response(
             headers: ['X-Test' => 42],
-            body: new StreamStub($content, writable: false),
+            body: new StreamMock($content, writable: false),
         );
         $emitter = new SapiEmitter();
 
@@ -124,7 +124,7 @@ final class SapiEmitterTest extends TestCase
     {
         $content = 'Test';
         $response = new Response(
-            body: new StreamStub($content, seekable: false),
+            body: new StreamMock($content, seekable: false),
         );
         $emitter = new SapiEmitter();
 
@@ -139,7 +139,7 @@ final class SapiEmitterTest extends TestCase
     public function testSeekableStream(int $bufferSize): void
     {
         $content = 'Test';
-        $body = new StreamStub($content);
+        $body = new StreamMock($content);
         $body->read(100);
         $response = new Response(body: $body);
         $emitter = new SapiEmitter($bufferSize);

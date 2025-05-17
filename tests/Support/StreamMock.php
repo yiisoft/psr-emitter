@@ -10,7 +10,7 @@ use Stringable;
 
 use function strlen;
 
-final class StreamStub implements StreamInterface, Stringable
+final class StreamMock implements StreamInterface, Stringable
 {
     public bool $isGetContentsCalled = false;
     public bool $isReadCalled = false;
