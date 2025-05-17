@@ -38,7 +38,10 @@ final class SapiEmitterTest extends TestCase
     {
         $content = 'Example body';
         $response = new Response(
-            headers: ['X-Test' => 1],
+            headers: [
+                'X-Test' => 1,
+                'X-Remove' => ['a', 'b'],
+            ],
             body: (new StreamFactory())->createStream($content),
         );
         $emitter = new SapiEmitter($bufferSize);
@@ -46,7 +49,13 @@ final class SapiEmitterTest extends TestCase
         $emitter->emit($response);
 
         assertSame('HTTP/1.1 200 OK', HeaderMock::$status);
-        assertSame(['X-Test' => ['1']], HeaderMock::$headers);
+        assertSame(
+            [
+                'X-Test' => ['1'],
+                'X-Remove' => ['a', 'b'],
+            ],
+            HeaderMock::$headers,
+        );
         assertSame(1, HeaderRemoveMock::$countWithoutName);
         assertSame(0, HeaderRemoveMock::$countWithName);
         assertSame($expectedFlushCalls, FlushMock::$count);
