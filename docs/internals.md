@@ -2,10 +2,27 @@
 
 ## Unit testing
 
-The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
+The package is tested with [PHPUnit](https://phpunit.de/). For tests, we mock internals PHP functions with
+[xepozz/internal-mocker](https://github.com/xepozz/internal-mocker):
+
+- `headers_sent()`,
+- `header()`,
+- `header_remove()`,
+- `flush()`.
+
+It requires disabling these functions in PHP. You can make it by running a command with the additional flags:  
 
 ```shell
-./vendor/bin/phpunit
+php -ddisable_functions=headers_sent,header,header_remove,flush ./vendor/bin/phpunit
+
+# or use composer script
+composer test
+```
+
+Another way to disable functions is adding them to `php.ini`:
+
+```ini
+disable_functions=headers_sent,header,header_remove,flush
 ```
 
 ## Mutation testing
@@ -16,6 +33,8 @@ The package tests are checked with [Infection](https://infection.github.io/) mut
 ```shell
 ./vendor/bin/roave-infection-static-analysis-plugin
 ```
+
+Running mutation testing requires disabling the same functions as unit testing. Do it by `php.ini` way.
 
 ## Static analysis
 
