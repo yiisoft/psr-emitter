@@ -134,13 +134,15 @@ final class SapiEmitterTest extends TestCase
         $this->expectOutputString($content);
     }
 
-    public function testSeekableStream(): void
+    #[TestWith([2])]
+    #[TestWith([10])]
+    public function testSeekableStream(int $bufferSize): void
     {
         $content = 'Test';
         $body = new StreamStub($content);
         $body->read(100);
         $response = new Response(body: $body);
-        $emitter = new SapiEmitter();
+        $emitter = new SapiEmitter($bufferSize);
 
         $emitter->emit($response);
 
