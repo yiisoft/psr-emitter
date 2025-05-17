@@ -33,15 +33,15 @@
         "yiisoft/friendly-exception": "^1.1"
     },
     "require-dev": {
-        "httpsoft/http-message": "^1.1",
+        "httpsoft/http-message": "^1.1.6",
         "maglnet/composer-require-checker": "^4.7.1",
         "phpunit/phpunit": "^10.5.46",
-        "psr/http-server-middleware": "^1.0",
+        "psr/http-server-middleware": "^1.0.2",
         "rector/rector": "^2.0.16",
         "roave/infection-static-analysis-plugin": "^1.35",
         "spatie/phpunit-watcher": "^1.24",
         "vimeo/psalm": "^5.26.1 || ^6.10.3",
-        "xepozz/internal-mocker": "^1.4"
+        "xepozz/internal-mocker": "^1.4.1"
     },
     "suggest": {
         "psr/http-server-middleware": "To use emitter as middleware."

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\PsrEmitter\Tests;
 
 use HttpSoft\Message\Response;
+use HttpSoft\Message\StreamFactory;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
@@ -16,9 +17,11 @@ use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\FlushMock;
 use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeaderMock;
 use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeaderRemoveMock;
 use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeadersSentMock;
-use Yiisoft\PsrEmitter\Tests\Support\StreamStub;
+use Yiisoft\PsrEmitter\Tests\Support\StreamMock;
 
+use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
+use function PHPUnit\Framework\assertTrue;
 
 final class SapiEmitterTest extends TestCase
 {
@@ -30,32 +33,55 @@ final class SapiEmitterTest extends TestCase
         FlushMock::reset();
     }
 
-    #[TestWith([null])]
-    #[TestWith([1])]
-    #[TestWith([100])]
-    #[TestWith([1000])]
-    public function testBase(?int $bufferSize): void
+    #[TestWith([2, null])]
+    #[TestWith([13, 1])]
+    #[TestWith([2, 100])]
+    public function testBase(int $expectedFlushCalls, ?int $bufferSize): void
     {
         $content = 'Example body';
         $response = new Response(
-            headers: ['X-Test' => 1],
-            body: new StreamStub($content),
+            headers: [
+                'X-Test' => 1,
+                'X-Remove' => ['a', 'b'],
+            ],
+            body: (new StreamFactory())->createStream($content),
         );
         $emitter = new SapiEmitter($bufferSize);
 
         $emitter->emit($response);
 
         assertSame('HTTP/1.1 200 OK', HeaderMock::$status);
-        assertSame(['X-Test' => ['1']], HeaderMock::$headers);
+        assertSame(
+            [
+                'X-Test' => ['1'],
+                'X-Remove' => ['a', 'b'],
+            ],
+            HeaderMock::$headers,
+        );
         assertSame(1, HeaderRemoveMock::$countWithoutName);
         assertSame(0, HeaderRemoveMock::$countWithName);
-        assertSame(2, FlushMock::$count);
+        assertSame($expectedFlushCalls, FlushMock::$count);
+        $this->expectOutputString($content);
+    }
+
+    public function testFullContentEmission(): void
+    {
+        $content = 'Example body';
+        $stream = new StreamMock($content);
+        $emitter = new SapiEmitter(12);
+
+        $emitter->emit(
+            new Response(body: $stream)
+        );
+
+        assertTrue($stream->isGetContentsCalled);
+        assertFalse($stream->isReadCalled);
         $this->expectOutputString($content);
     }
 
     public function testFlushWithoutBody(): void
     {
-        $response = new Response(body: new StreamStub());
+        $response = new Response(body: new StreamMock());
         $emitter = new SapiEmitter();
 
         $emitter->emit($response);
@@ -67,7 +93,7 @@ final class SapiEmitterTest extends TestCase
     {
         $response = new Response(
             headers: ['X-Test' => 42],
-            body: new StreamStub('hello', readable: false),
+            body: new StreamMock('hello', readable: false),
         );
         $emitter = new SapiEmitter();
 
@@ -83,7 +109,7 @@ final class SapiEmitterTest extends TestCase
         $content = 'Test';
         $response = new Response(
             headers: ['X-Test' => 42],
-            body: new StreamStub($content, writable: false),
+            body: new StreamMock($content, writable: false),
         );
         $emitter = new SapiEmitter();
 
@@ -91,6 +117,35 @@ final class SapiEmitterTest extends TestCase
 
         assertSame('HTTP/1.1 200 OK', HeaderMock::$status);
         assertSame(['X-Test' => ['42']], HeaderMock::$headers);
+        $this->expectOutputString($content);
+    }
+
+    public function testNotSeekableStream(): void
+    {
+        $content = 'Test';
+        $response = new Response(
+            body: new StreamMock($content, seekable: false),
+        );
+        $emitter = new SapiEmitter();
+
+        $emitter->emit($response);
+
+        assertSame('HTTP/1.1 200 OK', HeaderMock::$status);
+        $this->expectOutputString($content);
+    }
+
+    #[TestWith([2])]
+    #[TestWith([10])]
+    public function testSeekableStream(int $bufferSize): void
+    {
+        $content = 'Test';
+        $body = new StreamMock($content);
+        $body->read(100);
+        $response = new Response(body: $body);
+        $emitter = new SapiEmitter($bufferSize);
+
+        $emitter->emit($response);
+
         $this->expectOutputString($content);
     }
 
