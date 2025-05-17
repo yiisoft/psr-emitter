@@ -8,8 +8,13 @@ use LogicException;
 use Psr\Http\Message\StreamInterface;
 use Stringable;
 
+use function strlen;
+
 final class StreamStub implements StreamInterface, Stringable
 {
+    public bool $isGetContentsCalled = false;
+    public bool $isReadCalled = false;
+
     private bool $isRead = false;
 
     public function __construct(
@@ -38,7 +43,7 @@ final class StreamStub implements StreamInterface, Stringable
 
     public function getSize(): ?int
     {
-        return null;
+        return strlen($this->content);
     }
 
     public function tell(): int
@@ -87,13 +92,17 @@ final class StreamStub implements StreamInterface, Stringable
     public function read(int $length): string
     {
         $result = $this->isRead ? '' : $this->content;
+
         $this->isRead = true;
+        $this->isReadCalled = true;
+
         return $result;
     }
 
     public function getContents(): string
     {
-        throw new LogicException('Not implemented.');
+        $this->isGetContentsCalled = true;
+        return $this->content;
     }
 
     public function getMetadata(?string $key = null)

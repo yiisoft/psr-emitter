@@ -19,7 +19,9 @@ use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeaderRemoveMock;
 use Yiisoft\PsrEmitter\Tests\Support\InternalMocker\Mock\HeadersSentMock;
 use Yiisoft\PsrEmitter\Tests\Support\StreamStub;
 
+use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertSame;
+use function PHPUnit\Framework\assertTrue;
 
 final class SapiEmitterTest extends TestCase
 {
@@ -59,6 +61,21 @@ final class SapiEmitterTest extends TestCase
         assertSame(1, HeaderRemoveMock::$countWithoutName);
         assertSame(0, HeaderRemoveMock::$countWithName);
         assertSame($expectedFlushCalls, FlushMock::$count);
+        $this->expectOutputString($content);
+    }
+
+    public function testFullContentEmission(): void
+    {
+        $content = 'Example body';
+        $stream = new StreamStub($content);
+        $emitter = new SapiEmitter(12);
+
+        $emitter->emit(
+            new Response(body: $stream)
+        );
+
+        assertTrue($stream->isGetContentsCalled);
+        assertFalse($stream->isReadCalled);
         $this->expectOutputString($content);
     }
 

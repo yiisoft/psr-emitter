@@ -12,11 +12,6 @@
     },
     "minCoveredMsi": 100,
     "mutators": {
-        "@default": true,
-        "LessThanOrEqualTo": {
-            "ignoreSourceCodeByRegex": [
-                "if \\(\\$size !== null && \\$size <= \\$this->bufferSize\\) {"
-            ]
-        }
+        "@default": true
     }
 }
