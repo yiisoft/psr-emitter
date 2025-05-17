@@ -63,6 +63,9 @@ final class StreamStub implements StreamInterface, Stringable
 
     public function rewind(): void
     {
+        if (!$this->isSeekable()) {
+            throw new LogicException('Stream is not seekable.');
+        }
         $this->isRead = false;
     }
 

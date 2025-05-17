@@ -103,6 +103,20 @@ final class SapiEmitterTest extends TestCase
         $this->expectOutputString($content);
     }
 
+    public function testNotSeekableStream(): void
+    {
+        $content = 'Test';
+        $response = new Response(
+            body: new StreamStub($content, seekable: false),
+        );
+        $emitter = new SapiEmitter();
+
+        $emitter->emit($response);
+
+        assertSame('HTTP/1.1 200 OK', HeaderMock::$status);
+        $this->expectOutputString($content);
+    }
+
     #[TestWith([0])]
     #[TestWith([-1])]
     public function testBufferSizeLessThanOne(int $value): void
