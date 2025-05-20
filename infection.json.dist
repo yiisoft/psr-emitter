@@ -10,6 +10,7 @@
             "report": "master"
         }
     },
+    "minCoveredMsi": 100,
     "mutators": {
         "@default": true
     }
