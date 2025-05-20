@@ -15,7 +15,13 @@
 [![type-coverage](https://shepherd.dev/github/yiisoft/psr-emitter/coverage.svg)](https://shepherd.dev/github/yiisoft/psr-emitter)
 [![psalm-level](https://shepherd.dev/github/yiisoft/psr-emitter/level.svg)](https://shepherd.dev/github/yiisoft/psr-emitter)
 
-The package ...
+The package provides `EmitterInterface` that is responsible for sending PSR-7 HTTP responses as well as several implementations of the interface:
+
+- `SapiEmitter` - sends a response using standard PHP Server API;
+- `FakeEmiiter` - a fake emitter that does nothing, except for capturing response (useful for testing purposes).
+
+Additionally, the package provides `EmitterMiddleware` PSR-15 middleware that can be used in an application to send 
+a response by any `EmitterInterface` implementation.
 
 ## Requirements
 
@@ -30,6 +36,32 @@ composer require yiisoft/psr-emitter
 ```
 
 ## General usage
+
+Create emitter instance and call `emit()` method with a PSR-7 response:
+
+```php
+use Psr\Http\Message\ResponseInterface;
+use Yiisoft\PsrEmitter\SapiEmitter;
+
+/** @var Response $response */
+
+$emitter = new SapiEmitter();
+$emitter->emit($response);
+```
+
+You can customize the buffer size (by default, 8MB) for large response bodies:
+
+```php
+use Psr\Http\Message\ResponseInterface;
+use Yiisoft\PsrEmitter\SapiEmitter;
+
+/** @var Response $response */
+
+$emitter = new SapiEmitter(4_194_304); // Buffer size is 4MB
+
+// Response content will be sent in chunks of 4MB
+$emitter->emit($response);
+```
 
 ## Documentation
 
