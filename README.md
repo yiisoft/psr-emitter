@@ -15,7 +15,7 @@
 [![type-coverage](https://shepherd.dev/github/yiisoft/psr-emitter/coverage.svg)](https://shepherd.dev/github/yiisoft/psr-emitter)
 [![psalm-level](https://shepherd.dev/github/yiisoft/psr-emitter/level.svg)](https://shepherd.dev/github/yiisoft/psr-emitter)
 
-The package provides `EmitterInterface` that responsible for sending PSR-7 HTTP responses and several implementations:
+The package provides `EmitterInterface` that is responsible for sending PSR-7 HTTP responses as well as several implementations of the interface:
 
 - `SapiEmitter` - sends a response using standard PHP Server API;
 - `FakeEmiiter` - a fake emitter that does nothing, except for capturing response (useful for testing purposes).
