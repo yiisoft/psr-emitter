@@ -34,7 +34,7 @@ The package tests are checked with [Infection](https://infection.github.io/) mut
 ./vendor/bin/roave-infection-static-analysis-plugin
 ```
 
-Running mutation testing requires disabling the same functions as unit testing. Do it by `php.ini` way.
+Running mutation testing requires disabling the same functions as unit testing. Do it in `php.ini`.
 
 ## Static analysis
 
