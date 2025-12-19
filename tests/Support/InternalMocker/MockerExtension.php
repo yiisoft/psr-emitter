@@ -62,12 +62,12 @@ final class MockerExtension implements Extension
             [
                 'namespace' => '',
                 'name' => 'header_remove',
-                'function' => fn(?string $name = null) => HeaderRemoveMock::execute($name),
+                'function' => HeaderRemoveMock::execute(...),
             ],
             [
                 'namespace' => '',
                 'name' => 'flush',
-                'function' => fn() => FlushMock::execute(),
+                'function' => FlushMock::execute(...),
             ],
         ];
 
