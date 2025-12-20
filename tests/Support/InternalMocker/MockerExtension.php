@@ -46,8 +46,8 @@ final class MockerExtension implements Extension
                 'namespace' => '',
                 'name' => 'headers_sent',
                 'function' => fn(
-                    string &$file = null,
-                    int &$line = null
+                    ?string &$file = null,
+                    ?int &$line = null
                 ): bool => HeadersSentMock::execute($file, $line),
             ],
             [

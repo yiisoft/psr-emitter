@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\CodeQuality\Rector\Class_\InlineConstructorDefaultToPropertyRector;
+use Rector\CodingStyle\Rector\ArrowFunction\ArrowFunctionDelegatingCallToFirstClassCallableRector;
 use Rector\Config\RectorConfig;
 use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
@@ -21,4 +22,7 @@ return RectorConfig::configure()
         ClosureToArrowFunctionRector::class,
         ReadOnlyPropertyRector::class,
         NullToStrictStringFuncCallArgRector::class,
+        ArrowFunctionDelegatingCallToFirstClassCallableRector::class => [
+            'tests/Support/InternalMocker/MockerExtension.php',
+        ],
     ]);
