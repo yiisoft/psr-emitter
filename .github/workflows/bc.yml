@@ -2,6 +2,7 @@ on:
   pull_request:
     paths: &paths
       - 'src/**'
+      - '.roave-backward-compatibility-check.xml'
       - '.github/workflows/bc.yml'
       - 'composer.json'
   push:
