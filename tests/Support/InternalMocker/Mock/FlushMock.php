@@ -16,5 +16,6 @@ final class FlushMock
     public static function execute(): void
     {
         self::$count++;
+        HeadersSentMock::$result = true;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\PsrEmitter\Tests;
 
+use Exception;
 use HttpSoft\Message\Response;
 use HttpSoft\Message\StreamFactory;
 use InvalidArgumentException;
@@ -222,5 +223,27 @@ final class SapiEmitterTest extends TestCase
         $emitter->emit($response3);
 
         $this->assertSame('123', $this->getActualOutputForAssertion());
+    }
+
+    public function testClosureResponseWithFailure(): void
+    {
+        $response1 = new ClosureResponse(
+            static fn() => throw new Exception('Failure while creating response stream'),
+        );
+        $response2 = new ClosureResponse(static fn() => 'Next response after failure');
+
+        $emitter = new SapiEmitter();
+
+        try {
+            $emitter->emit($response1);
+            $this->fail('Exception was not thrown.');
+        } catch (Exception $e) {
+            $this->assertSame('Failure while creating response stream', $e->getMessage());
+            $this->assertFalse(headers_sent());
+        }
+
+        $emitter->emit($response2);
+
+        $this->expectOutputString('Next response after failure');
     }
 }
