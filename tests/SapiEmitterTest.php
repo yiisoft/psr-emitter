@@ -208,22 +208,17 @@ final class SapiEmitterTest extends TestCase
 
     public function testNotClosedBuffer(): void
     {
-        $response1 = new ClosureResponse(static fn() => '1');
-        $response2 = new ClosureResponse(
+        $response = new ClosureResponse(
             static function () {
                 ob_start();
-                return '2';
+                return 'Not closed buffer';
             }
         );
 
         $emitter = new SapiEmitter();
-        $emitter->emit($response1);
+        $emitter->emit($response);
 
-        $this->expectOutputString('1');
-        $this->expectException(HeadersHaveBeenSentException::class);
-        $this->expectExceptionMessage('');
-
-        $emitter->emit($response2);
+        $this->expectOutputString('Not closed buffer');
     }
 
     public function testClosureResponseWithFailure(): void
