@@ -215,14 +215,15 @@ final class SapiEmitterTest extends TestCase
                 return '2';
             }
         );
-        $response3 = new ClosureResponse(static fn() => '3');
+
         $emitter = new SapiEmitter();
-
         $emitter->emit($response1);
-        $emitter->emit($response2);
-        $emitter->emit($response3);
 
-        $this->assertSame('123', $this->getActualOutputForAssertion());
+        $this->expectOutputString('1');
+        $this->expectException(HeadersHaveBeenSentException::class);
+        $this->expectExceptionMessage('');
+
+        $emitter->emit($response2);
     }
 
     public function testClosureResponseWithFailure(): void
@@ -239,6 +240,7 @@ final class SapiEmitterTest extends TestCase
             $this->fail('Exception was not thrown.');
         } catch (Exception $e) {
             $this->assertSame('Failure while creating response stream', $e->getMessage());
+            $this->assertFalse(headers_sent());
         }
 
         $emitter->emit($response2);
