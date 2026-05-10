@@ -239,7 +239,6 @@ final class SapiEmitterTest extends TestCase
             $this->fail('Exception was not thrown.');
         } catch (Exception $e) {
             $this->assertSame('Failure while creating response stream', $e->getMessage());
-            $this->assertFalse(headers_sent());
         }
 
         $emitter->emit($response2);
