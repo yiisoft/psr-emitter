@@ -2,7 +2,7 @@
 
 ## 1.0.2 under development
 
-- no changes in this release.
+- Bug #8: Fix closure response with failure (@Tigrov)
 
 ## 1.0.1 December 20, 2025
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\PsrEmitter\Tests;
 
+use Exception;
 use HttpSoft\Message\Response;
 use HttpSoft\Message\StreamFactory;
 use InvalidArgumentException;
@@ -207,20 +208,38 @@ final class SapiEmitterTest extends TestCase
 
     public function testNotClosedBuffer(): void
     {
-        $response1 = new ClosureResponse(static fn() => '1');
-        $response2 = new ClosureResponse(
+        $response = new ClosureResponse(
             static function () {
                 ob_start();
-                return '2';
+                return 'Not closed buffer';
             }
         );
-        $response3 = new ClosureResponse(static fn() => '3');
+
+        $emitter = new SapiEmitter();
+        $emitter->emit($response);
+
+        $this->expectOutputString('Not closed buffer');
+    }
+
+    public function testClosureResponseWithFailure(): void
+    {
+        $response1 = new ClosureResponse(
+            static fn() => throw new Exception('Failure while creating response stream'),
+        );
+        $response2 = new ClosureResponse(static fn() => 'Next response after failure');
+
         $emitter = new SapiEmitter();
 
-        $emitter->emit($response1);
-        $emitter->emit($response2);
-        $emitter->emit($response3);
+        try {
+            $emitter->emit($response1);
+            $this->fail('Exception was not thrown.');
+        } catch (Exception $e) {
+            $this->assertSame('Failure while creating response stream', $e->getMessage());
+            $this->assertFalse(headers_sent());
+        }
 
-        $this->assertSame('123', $this->getActualOutputForAssertion());
+        $emitter->emit($response2);
+
+        $this->expectOutputString('Next response after failure');
     }
 }

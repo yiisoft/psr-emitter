@@ -41,13 +41,6 @@ final class SapiEmitter implements EmitterInterface
     {
         $this->emitHeaders($response);
 
-        /**
-         * Sends headers before the body.
-         * Makes a client possible to recognize the type of the body content if it is sent with a delay,
-         * for instance, for a streamed response.
-         */
-        flush();
-
         $this->emitBody($response);
     }
 
@@ -90,6 +83,14 @@ final class SapiEmitter implements EmitterInterface
     {
         $level = ob_get_level();
         $body = $response->getBody();
+
+        /**
+         * Sends headers before the body.
+         * Makes a client possible to recognize the type of the body content if it is sent with a delay,
+         * for instance, for a streamed response.
+         */
+        flush();
+
         if (!$body->isReadable()) {
             return;
         }
