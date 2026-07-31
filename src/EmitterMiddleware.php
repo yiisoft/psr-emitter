@@ -19,8 +19,7 @@ final class EmitterMiddleware implements MiddlewareInterface
      */
     public function __construct(
         private readonly EmitterInterface $emitter = new SapiEmitter(),
-    ) {
-    }
+    ) {}
 
     /**
      * @throws HeadersHaveBeenSentException If headers have already been sent.

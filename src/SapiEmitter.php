@@ -75,7 +75,7 @@ final class SapiEmitter implements EmitterInterface
                 $response->getReasonPhrase(),
             ),
             true,
-            $status
+            $status,
         );
     }
 

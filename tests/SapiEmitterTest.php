@@ -72,7 +72,7 @@ final class SapiEmitterTest extends TestCase
         $emitter = new SapiEmitter(12);
 
         $emitter->emit(
-            new Response(body: $stream)
+            new Response(body: $stream),
         );
 
         assertTrue($stream->isGetContentsCalled);
@@ -212,7 +212,7 @@ final class SapiEmitterTest extends TestCase
             static function () {
                 ob_start();
                 return 'Not closed buffer';
-            }
+            },
         );
 
         $emitter = new SapiEmitter();

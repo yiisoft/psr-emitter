@@ -17,8 +17,7 @@ final class ClosureResponse implements ResponseInterface
 
     public function __construct(
         private readonly Closure $body,
-    ) {
-    }
+    ) {}
 
     public function getProtocolVersion(): string
     {
@@ -90,4 +89,3 @@ final class ClosureResponse implements ResponseInterface
         return 'OK';
     }
 }
-
