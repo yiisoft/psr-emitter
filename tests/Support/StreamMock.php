@@ -10,6 +10,8 @@ use Stringable;
 
 use function strlen;
 
+use const SEEK_SET;
+
 final class StreamMock implements StreamInterface, Stringable
 {
     public bool $isGetContentsCalled = false;
@@ -22,8 +24,7 @@ final class StreamMock implements StreamInterface, Stringable
         private readonly bool $readable = true,
         private readonly bool $writable = true,
         private readonly bool $seekable = true,
-    ) {
-    }
+    ) {}
 
     public function __toString(): string
     {

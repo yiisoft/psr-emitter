@@ -24,13 +24,13 @@ final class MockerExtension implements Extension
     public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
     {
         $facade->registerSubscribers(
-            new class () implements StartedSubscriber {
+            new class implements StartedSubscriber {
                 public function notify(Started $event): void
                 {
                     MockerExtension::load();
                 }
             },
-            new class () implements PreparationStartedSubscriber {
+            new class implements PreparationStartedSubscriber {
                 public function notify(PreparationStarted $event): void
                 {
                     MockerState::resetState();
@@ -47,7 +47,7 @@ final class MockerExtension implements Extension
                 'name' => 'headers_sent',
                 'function' => fn(
                     ?string &$file = null,
-                    ?int &$line = null
+                    ?int &$line = null,
                 ): bool => HeadersSentMock::execute($file, $line),
             ],
             [
@@ -56,7 +56,7 @@ final class MockerExtension implements Extension
                 'function' => fn(
                     string $header,
                     bool $replace = true,
-                    int $responseCode = 0
+                    int $responseCode = 0,
                 ) => HeaderMock::execute($header, $replace, $responseCode),
             ],
             [

@@ -33,6 +33,7 @@
         "yiisoft/friendly-exception": "^1.1"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
         "httpsoft/http-message": "^1.1.6",
         "maglnet/composer-require-checker": "^4.7.1",
         "phpunit/phpunit": "^10.5.46",
@@ -41,7 +42,8 @@
         "roave/infection-static-analysis-plugin": "^1.35",
         "spatie/phpunit-watcher": "^1.24",
         "vimeo/psalm": "^5.26.1 || ^6.10.3",
-        "xepozz/internal-mocker": "^1.4.1"
+        "xepozz/internal-mocker": "^1.4.1",
+        "yiisoft/code-style": "^1.1"
     },
     "suggest": {
         "psr/http-server-middleware": "To use emitter as middleware."
@@ -64,6 +66,8 @@
         }
     },
     "scripts": {
+        "cs-fix": "php-cs-fixer fix",
+        "rector": "rector",
         "test": "php -ddisable_functions=headers_sent,header,header_remove,flush ./vendor/bin/phpunit --testdox",
         "test-watch": "phpunit-watcher watch"
     }
