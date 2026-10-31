@@ -27,11 +27,10 @@ disable_functions=headers_sent,header,header_remove,flush
 
 ## Mutation testing
 
-The package tests are checked with [Infection](https://infection.github.io/) mutation framework with
-[Infection Static Analysis Plugin](https://github.com/Roave/infection-static-analysis-plugin). To run it:
+The package tests are checked with [Infection](https://infection.github.io/) mutation framework. To run it:
 
 ```shell
-./vendor/bin/roave-infection-static-analysis-plugin
+./vendor/bin/infection
 ```
 
 Running mutation testing requires disabling the same functions as unit testing. Do it in `php.ini`.
