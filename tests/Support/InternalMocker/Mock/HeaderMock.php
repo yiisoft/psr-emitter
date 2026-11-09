@@ -12,7 +12,7 @@ use function str_starts_with;
 final class HeaderMock
 {
     /**
-     * @psalm-var array<string, list<string>>
+     * @var array<string, list<string>>
      */
     public static array $headers = [];
     public static ?string $status = null;

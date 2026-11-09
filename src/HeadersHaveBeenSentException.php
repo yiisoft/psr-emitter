@@ -19,7 +19,7 @@ final class HeadersHaveBeenSentException extends Exception implements FriendlyEx
         return 'HTTP headers have been sent.';
     }
 
-    public function getSolution(): ?string
+    public function getSolution(): string
     {
         headers_sent($filename, $line);
 
