@@ -12,8 +12,6 @@
 [![Code Coverage](https://codecov.io/gh/yiisoft/psr-emitter/branch/master/graph/badge.svg)](https://codecov.io/gh/yiisoft/psr-emitter)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fpsr-emitter%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/psr-emitter/master)
 [![Static analysis](https://github.com/yiisoft/psr-emitter/actions/workflows/static.yml/badge.svg?branch=master)](https://github.com/yiisoft/psr-emitter/actions/workflows/static.yml?query=branch%3Amaster)
-[![type-coverage](https://shepherd.dev/github/yiisoft/psr-emitter/coverage.svg)](https://shepherd.dev/github/yiisoft/psr-emitter)
-[![psalm-level](https://shepherd.dev/github/yiisoft/psr-emitter/level.svg)](https://shepherd.dev/github/yiisoft/psr-emitter)
 
 The package provides `EmitterInterface` that is responsible for sending PSR-7 HTTP responses as well as several implementations of the interface:
 

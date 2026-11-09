@@ -21,7 +21,7 @@ final class SapiEmitter implements EmitterInterface
     private const DEFAULT_BUFFER_SIZE = 8_388_608; // 8MB
 
     /**
-     * @psalm-var positive-int
+     * @var positive-int
      */
     private int $bufferSize;
 
